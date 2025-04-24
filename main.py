@@ -1,27 +1,21 @@
-# Bibliotecas
+# Importação da biblioteca
 from random import choice
 
-# Mensagem de Boas-Vindas 
-print('*' * 41)
-print(' ' * 5, 'Bem-vindo(a) ao Jogo da Forca')
-print('*' * 41)
+# Criação da super-classe (classe mãe) 
+class ObtendoPalavra:
+    # Método para obter palavra de forma aleatória
+    def escolher_palavra(self):
+        with open(r"C:\\Users\\oscar\\Videos\\Temporário\\Projetos\\Projeto 01 - Jogo da Forca\\Jogo-da-Forca-\\Palavras.txt", "r") as arquivo:
+            # Escolher palavra de forma aleatória
+            palavra = choice(arquivo.read().split(', '))
+            return palavra
 
-# Função escolher palavra
-def palavra_escolhida():
+# Criação da sub-classe (classe filha)
+class JogoForca(ObtendoPalavra): # Inserindo como herça da super-classe
 
-    # Caminho do arquivo palavras.txt
-    with open(r"C:/Users/oscar/Videos/Temporário/Projetos\Projeto 01 - Jogo da Forca/Jogo-da-Forca-/Palavras.txt", "r") as arquivo:
-        # Adicionei as palavras em uma lista
-        palavras = arquivo.read().split(', ')
-
-        # Escolhendo de forma aleatória uma palavra
-        palavra_selecionada = choice(palavras)
-        return palavra_selecionada
-
-    
-# Função do desenho do bonequinho da forca
-def bonequinho(n):
-    desenho = ["""=============
+    # Metodo de construir bonequinho
+    def bonequinho(self, n):
+        desenho = ["""=============
 |        |
 |        O
 |       /|\\
@@ -70,81 +64,98 @@ def bonequinho(n):
 |
 -------------""",
 ]
-    print(desenho[n])
-    print(" ")
-    
-# Função principal 
-def jogo_forca():
-
-    # Chamar função (palavra_escolhida()) e guardar em uma variável o resultado
-    palavra = palavra_escolhida()
-
-    # Mostrando os tracinhos da palavra
-    print(len(palavra) * '_ ')
-    palavra_lista = list(len(palavra) * '_')
-
-    # Quantidade de chances
-    chances = 6
-
-    # Letras erradas
-    letras_erradas = ''
-
-    # Função de construção da palavra
-    def construcao_palavra():
-        print(f'Palavra: {''.join(palavra_lista)}')
+        print(desenho[n])
         print('')
-    
-    # Loop externo
-    while True:
-    
-        # Loop de tentativas para letras válidas
-        while True:
-            letra_usuario = input('Digite uma letra: ').lower()
 
-            # Usuário digitar uma letra válida
-            if letra_usuario.isalpha() and (letra_usuario not in ''.join(palavra_lista) and letra_usuario not in letras_erradas):
-                break
-            else:
-                print('Por favor digite uma letra válida!!')
+    # Método principal
+    def jogar(self):
+        # Variáveis usadas 
+        self.chances = 6
+        self.letras_erradas = ''
+
+        # status
+        self.status = True
+
+        # Mensagem inicial
+        print('')
+        print('Seja muito bem-vindo(a) ao Jogo da Forca')  
+        print('') 
+
+        # Chamando método palavra escolhida
+        self.palavra_escolhida = self.escolher_palavra()
+        print('Palavra: ','_ ' * len(self.palavra_escolhida))
+        self.construcao_palavra = list('_' * len(self.palavra_escolhida))
+
+        # Loop principal
+        while self.status:
+            # Método de construção da palavra
+            def exibir_construcao_palavra(self):
+                print('Palavra: ', ' '.join(self.construcao_palavra))
                 print('')
-        
-        # Condicional para ver a letra do usuário esta na palavra escolhida
-        if letra_usuario in palavra: 
 
-            # Loop principal para a construção da palavra 
-            for indice, letra in enumerate(palavra):
+            # Método para o usuário digitar uma letra
+            def usuario_digitar_letra(self):
+            # Loop de tentativas para letra válida
+                while True:
+                    self.letra_usuario = input('Digite uma letra: ').lower()
 
-                # Condicional para letra da palavra ser igual a letra do usuário
-                if letra_usuario == letra:
-                    palavra_lista[indice] = letra_usuario
+                    # Condicional para ver se é uma letra, se a letra não esta nas letras erradas, se a letra não esta nas letras certas
+                    if self.letra_usuario.isalpha() and self.letra_usuario not in self.letras_erradas and self.letra_usuario not in self.construcao_palavra:
+                        return self.letra_usuario
+                    else:
+                        print('Por favor digite uma letra válida!')
+                        print('')
 
-            # Chamando a função para exibir a palavra em construção
-            construcao_palavra()
+            # Método principal
+            def metodo_principal(self):
+                # Condicional para verificar se a letra do usuário está na palavra escolhida
+                if self.letra_usuario in self.palavra_escolhida:
+                    # Loop de iteração na palavra escolhida
+                    for indice , letra in enumerate(self.palavra_escolhida):
+                        # Condicional para verificar se letra usuário e a mesma letra da palavra escolhida
+                        if self.letra_usuario == letra:
+                            self.construcao_palavra[indice] = self.letra_usuario
 
-        # Condicional, se a letra não estive na palavra
-        else:
-            # Chances 
-            chances = chances - 1
-            print(f'Chances restantes: {chances}')
+                    
 
-            # Chamando função bonequinho e exibir palavra e construção
-            bonequinho(n=chances)
-            construcao_palavra()
+                # A letra do usuário não está na palavra escolhida
+                else:
+                    # Chances
+                    self.chances = self.chances - 1
+                    print(f'Chances restantes: {self.chances}')
 
-            # Letras erradas
-            letras_erradas = letras_erradas + letra_usuario 
-            print(f'Letras erradas: {letras_erradas}')
+                    # Chamando o método do bonequinho 
+                    self.bonequinho(n = self.chances)
+                    
 
-        # Se o usuário perder todas as suas chances 
-        if chances == 0:
-            print('')
-            print(f'Infelizmente, você PERDEU o jogo.\nA palavra era {palavra}\nMas pode tentar novamente. Boa sorte!')
-            break
+                    # Letras erradas 
+                    self.letras_erradas += self.letra_usuario
+                    print(f'Letras erradas: {self.letras_erradas}')
 
-        # Se o usuário completar a palavra 
-        elif palavra == ''.join(palavra_lista):
-            print('')
-            print('Parabéns, você acabou de GANHAR o jogo!')
-            break
+                # Chamando método exibir a construção da palavra 
+                exibir_construcao_palavra(self)
+                    
+            # Método do status do jogo
+            def status_jogo(self):
+                if self.palavra_escolhida == ''.join(self.construcao_palavra):
+                    print('')
+                    print('Parabéns. Você acabou de GANHAR o jogo!!')
+                    self.status = False
+                # Condicional para ver se o usuário perdeu
+                elif self.chances == 0:
+                    print('')
+                    print('Infelizmente. Você PERDEU o jogo\nMas, pode tentar novamente, boa sorte!')
+                    print(f'A palavra era: {self.palavra_escolhida}')
+                    self.status = False
 
-jogo_forca()
+            # Chamando método usuário digitar uma letra
+            usuario_digitar_letra(self)
+
+            # Chamando método principal
+            metodo_principal(self)
+
+            # Chamando método status do jogo
+            status_jogo(self)           
+
+teste = JogoForca()
+teste.jogar()
